@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qual é o seu temperamento?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --s-color: #EF9F27;
+    --s-light: #FAEEDA;
+    --c-color: #E24B4A;
+    --c-light: #FCEBEB;
+    --m-color: #378ADD;
+    --m-light: #E6F1FB;
+    --f-color: #1D9E75;
+    --f-light: #E1F5EE;
+    --bg: #0e0b07;
+    --surface: #1a1510;
+    --surface2: #241e16;
+    --text: #f5efe6;
+    --text-muted: #9a8f82;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem 4rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(239,159,39,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(29,158,117,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .site-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeDown 0.6s ease both;
+  }
+  .site-header .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--s-color);
+    border: 0.5px solid rgba(239,159,39,0.35);
+    border-radius: 99px;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+  }
+  .site-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 7vw, 42px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .site-header h1 span {
+    background: linear-gradient(90deg, var(--s-color), var(--c-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .site-header p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  /* Progress */
+  .progress-wrap { margin-bottom: 1.75rem; }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    height: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 4px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--s-color), var(--c-color), var(--m-color), var(--f-color));
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Question */
+  .q-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 1.45;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .opt-btn:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.18);
+    transform: translateX(3px);
+  }
+  .opt-btn:active { transform: scale(0.99); }
+
+  .opt-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .dot-S { background: rgba(239,159,39,0.15); color: var(--s-color); }
+  .dot-C { background: rgba(226,75,74,0.15); color: var(--c-color); }
+  .dot-M { background: rgba(55,138,221,0.15); color: var(--m-color); }
+  .dot-F { background: rgba(29,158,117,0.15); color: var(--f-color); }
+
+  /* Nav */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s;
+  }
+  .back-btn:hover { color: var(--text); }
+  .back-btn:disabled { opacity: 0.25; cursor: default; }
+
+  /* Result */
+  .result-header { text-align: center; margin-bottom: 1.75rem; }
+  .result-icon {
+    font-size: 52px;
+    margin-bottom: 12px;
+    display: block;
+    animation: bounceIn 0.5s ease both;
+  }
+  .result-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .result-words {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+  .result-desc-box {
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+
+  /* Bars */
+  .bars-section { margin-bottom: 1.5rem; }
+  .bars-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .bar-name {
+    font-size: 13px;
+    color: var(--text-muted);
+    width: 95px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    height: 7px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 7px;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .bar-pct {
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 30px;
+    text-align: right;
+  }
+
+  /* Note */
+  .note {
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  /* Restart */
+  .restart-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 0.5px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .restart-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 12px;
+    color: var(--text-muted);
+    animation: fadeUp 0.6s 0.3s ease both;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 1.5rem 1.25rem; }
+    body { padding: 1.5rem 0.75rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="site-header">
+    <div class="tag">Psicologia dos temperamentos</div>
+    <h1>Qual é o seu <span>temperamento</span>?</h1>
+    <p>7 perguntas para descobrir como você age, sente e se relaciona com o mundo.</p>
+  </header>
+
+  <div class="card" id="app"></div>
+
+  <div class="footer">Baseado nos 4 temperamentos clássicos &mdash; Hipócrates &amp; Galeno</div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "Numa festa com pessoas que você mal conhece, você tende a...",
+    options: [
+      { text: "Circular e falar com todo mundo — quanto mais, melhor!", temp: "S" },
+      { text: "Assumir o papel de organizar ou liderar algo no evento", temp: "C" },
+      { text: "Ficar com um grupinho pequeno e ter conversas mais profundas", temp: "M" },
+      { text: "Observar, curtir o clima e agir quando a situação pede", temp: "F" }
+    ]
+  },
+  {
+    text: "Quando você recebe uma crítica, sua reação mais honesta é...",
+    options: [
+      { text: "Fico abalado por um momento, mas logo esqueço e sigo em frente", temp: "S" },
+      { text: "Fico irritado — especialmente se achar que a crítica é injusta", temp: "C" },
+      { text: "Reflito bastante sobre isso, às vezes por dias", temp: "M" },
+      { text: "Ouço com calma e avalio depois se faz sentido", temp: "F" }
+    ]
+  },
+  {
+    text: "No trabalho ou em projetos, você prefere...",
+    options: [
+      { text: "Trabalhar em equipe, com energia e muito movimento", temp: "S" },
+      { text: "Ser o responsável, ter autonomia e fazer do meu jeito", temp: "C" },
+      { text: "Ter tempo para planejar bem antes de executar", temp: "M" },
+      { text: "Colaborar sem conflitos, mantendo o ambiente harmônico", temp: "F" }
+    ]
+  },
+  {
+    text: "Quando precisa tomar uma decisão difícil, você...",
+    options: [
+      { text: "Decide rápido seguindo o instinto — pensar demais paralisa", temp: "S" },
+      { text: "Analisa os fatos e decide com firmeza, sem hesitar", temp: "C" },
+      { text: "Pesa cada detalhe cuidadosamente antes de agir", temp: "M" },
+      { text: "Considera o impacto em todos ao redor antes de escolher", temp: "F" }
+    ]
+  },
+  {
+    text: "Seus amigos te descrevem mais como...",
+    options: [
+      { text: "Divertido, sociável, cheio de energia e sempre animado", temp: "S" },
+      { text: "Determinado, direto, líder nato e confiante", temp: "C" },
+      { text: "Criativo, sensível, perfeccionista e reflexivo", temp: "M" },
+      { text: "Calmo, confiável, paciente e bom ouvinte", temp: "F" }
+    ]
+  },
+  {
+    text: "Em situações de conflito, você costuma...",
+    options: [
+      { text: "Tentar descontrair o clima com humor ou mudar de assunto", temp: "S" },
+      { text: "Ir direto ao ponto e resolver na hora, sem rodeios", temp: "C" },
+      { text: "Ficar remoendo internamente e demorar para se expressar", temp: "M" },
+      { text: "Evitar ao máximo — harmonia vale mais que ter razão", temp: "F" }
+    ]
+  },
+  {
+    text: "Qual dessas frases mais combina com você?",
+    options: [
+      { text: "\"A vida é curta, aproveita!\"", temp: "S" },
+      { text: "\"Se quer que algo seja feito direito, faça você mesmo.\"", temp: "C" },
+      { text: "\"Os detalhes fazem toda a diferença.\"", temp: "M" },
+      { text: "\"Devagar e sempre se chega lá.\"", temp: "F" }
+    ]
+  }
+];
+
+const results = {
+  S: {
+    name: "Sanguíneo",
+    icon: "☀️",
+    color: "var(--s-color)",
+    bgLight: "rgba(239,159,39,0.1)",
+    barColor: "#EF9F27",
+    words: "Extrovertido · Otimista · Comunicativo",
+    desc: "Você é a energia da sala! Sanguíneos são pessoas calorosas, entusiastas e que se conectam com facilidade com todos. Você vive o presente com intensidade, tem criatividade natural e uma capacidade incrível de inspirar quem está ao redor. O desafio? Manter o foco e a constância nos projetos de longo prazo."
+  },
+  C: {
+    name: "Colérico",
+    icon: "🔥",
+    color: "var(--c-color)",
+    bgLight: "rgba(226,75,74,0.1)",
+    barColor: "#E24B4A",
+    words: "Determinado · Líder · Decisivo",
+    desc: "Você é movido por resultados e não tem medo de assumir o comando. Coléricos têm uma visão clara do que querem, agem com rapidez e não suportam ineficiência. São líderes natos que inspiram com sua determinação. O desafio? Cultivar paciência com quem tem um ritmo diferente do seu."
+  },
+  M: {
+    name: "Melancólico",
+    icon: "🌊",
+    color: "var(--m-color)",
+    bgLight: "rgba(55,138,221,0.1)",
+    barColor: "#378ADD",
+    words: "Analítico · Criativo · Profundo",
+    desc: "Você sente e pensa com uma profundidade que poucos alcançam. Melancólicos são perfeccionistas, criativos e têm uma capacidade rara de análise. Você se dedica de verdade ao que faz e busca sempre o melhor. O desafio? Aprender a se perdoar pelos erros e não deixar o perfeccionismo virar paralisia."
+  },
+  F: {
+    name: "Fleumático",
+    icon: "🌿",
+    color: "var(--f-color)",
+    bgLight: "rgba(29,158,117,0.1)",
+    barColor: "#1D9E75",
+    words: "Calmo · Paciente · Diplomático",
+    desc: "Você é o porto seguro das pessoas ao seu redor. Fleumáticos têm uma calma quase inabalável, são confiáveis, excelentes mediadores e raramente perdem o equilíbrio. Sua presença estabiliza qualquer ambiente. O desafio? Dar voz às suas próprias necessidades e não evitar conflitos necessários."
+  }
+};
+
+const tempOrder = ["S","C","M","F"];
+const tempNames = { S: "Sanguíneo", C: "Colérico", M: "Melancólico", F: "Fleumático" };
+const barColors = { S: "#EF9F27", C: "#E24B4A", M: "#378ADD", F: "#1D9E75" };
+
+let current = 0;
+let scores = { S: 0, C: 0, M: 0, F: 0 };
+
+function render() {
+  const app = document.getElementById("app");
+  if (current < questions.length) {
+    const q = questions[current];
+    const pct = Math.round((current / questions.length) * 100);
+    app.innerHTML = `
+      <div class="nav-row">
+        <button class="back-btn" onclick="goBack()" ${current === 0 ? "disabled" : ""}>← Voltar</button>
+        <span style="font-size:12px;color:var(--text-muted)">${current + 1} / ${questions.length}</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="q-number">Pergunta ${current + 1}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="options">
+        ${q.options.map(o => `
+          <button class="opt-btn" onclick="choose('${o.temp}')">
+            <span class="opt-dot dot-${o.temp}">${o.temp}</span>
+            ${o.text}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  } else {
+    showResult();
+  }
+}
+
+function choose(temp) {
+  scores[temp]++;
+  current++;
+  render();
+}
+
+function goBack() {
+  if (current > 0) { current--; render(); }
+}
+
+function showResult() {
+  const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const r = results[top];
+  const total = questions.length;
+  const app = document.getElementById("app");
+
+  app.innerHTML = `
+    <div class="result-header">
+      <span class="result-icon">${r.icon}</span>
+      <div class="result-name" style="color:${r.color}">${r.name}</div>
+      <div class="result-words">${r.words}</div>
+    </div>
+    <div class="result-desc-box" style="background:${r.bgLight};border:0.5px solid ${r.barColor}33;">
+      <p style="font-size:14.5px;line-height:1.7;color:var(--text)">${r.desc}</p>
+    </div>
+    <div class="bars-section">
+      <div class="bars-title">Distribuição do seu perfil</div>
+      ${tempOrder.map(k => `
+        <div class="bar-row">
+          <span class="bar-name">${tempNames[k]}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round((scores[k]/total)*100)}%;background:${barColors[k]}"></div></div>
+          <span class="bar-pct">${Math.round((scores[k]/total)*100)}%</span>
+        </div>
+      `).join("")}
+    </div>
+    <div class="note">Nenhum temperamento é melhor que o outro — cada um tem dons e desafios únicos. Você provavelmente tem traços de mais de um!</div>
+    <button class="restart-btn" onclick="restart()">Refazer o quiz ↺</button>
+  `;
+}
+
+function restart() {
+  current = 0;
+  scores = { S: 0, C: 0, M: 0, F: 0 };
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
